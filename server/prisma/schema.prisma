@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String    @unique
+  actualCompany String?   @unique
+  birthDate     DateTime?
+  friendsIds    String[]  @db.ObjectId
+  profileTestId String[]  @db.ObjectId
+  createdAt     DateTime  @default(now())
+
+  friends          Friend      @relation(fields: [friendsIds], references: [id])
+  profileTest      ProfileTest @relation(fields: [profileTestId], references: [id])
+  feedbackFromUser Feedback[]  @relation("feedbackFromUser")
+  feedbackToUser   Feedback[]  @relation("feedbackToUser")
+
+  @@unique([profileTestId])
+}
+
+model Friend {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String
+  comment String
+
+  user User[]
+}
+
+model ProfileTest {
+  id  String @id @default(auto()) @map("_id") @db.ObjectId
+  ask Int
+
+  user User?
+}
+
+model Feedback {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  fromUserId   String   @db.ObjectId
+  toUserId     String   @db.ObjectId
+  feedbacksIds String[] @db.ObjectId
+
+  fromUser     User         @relation("feedbackFromUser", fields: [fromUserId], references: [id])
+  toUser       User         @relation("feedbackToUser", fields: [toUserId], references: [id])
+  feedbackData FeedbackData @relation(fields: [feedbacksIds], references: [id])
+}
+
+model FeedbackData {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  date              DateTime
+  accept            Boolean
+  currentPost       String
+  comments          String
+  usersIndicatorsId String   @db.ObjectId
+  actionPlansIds    String[] @db.ObjectId
+
+  usersIndicators UsersIndicators? @relation(fields: [usersIndicatorsId], references: [id])
+  actionPlans     ActionPlan       @relation(fields: [actionPlansIds], references: [id])
+  feedback        Feedback[]
+
+  @@unique([usersIndicatorsId])
+}
+
+model UsersIndicators {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  templateId String   @db.ObjectId
+  valuesIds  String[] @db.ObjectId
+
+  indicatorTemplate IndicatorTemplate @relation(fields: [templateId], references: [id])
+  indicatorValue    IndicatorValue    @relation(fields: [valuesIds], references: [id])
+  feedbackData      FeedbackData?
+}
+
+model IndicatorTemplate {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                   String
+  indicatorsCategorysIds String[] @db.ObjectId
+
+  indicatorCategory IndicatorCategory @relation(fields: [indicatorsCategorysIds], references: [id])
+  usersIndicators   UsersIndicators[]
+}
+
+model IndicatorCategory {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  indicatorsTypesIds String[] @db.ObjectId
+
+  indicatorType     IndicatorType       @relation(fields: [indicatorsTypesIds], references: [id])
+  indicatorTemplate IndicatorTemplate[]
+}
+
+model IndicatorType {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  descriptionN1 String
+  descriptionN2 String
+  descriptionN3 String
+  descriptionN4 String
+  descriptionN5 String
+
+  indicatorCategory IndicatorCategory[]
+  indicatorValue    IndicatorValue[]
+}
+
+model IndicatorValue {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  value              Int
+  indicatorsTypesIds String[] @db.ObjectId
+
+  indicatorType   IndicatorType     @relation(fields: [indicatorsTypesIds], references: [id])
+  usersIndicators UsersIndicators[]
+}
+
+model ActionPlan {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  action   String
+  realized Boolean
+
+  feedbackData FeedbackData[]
+}
