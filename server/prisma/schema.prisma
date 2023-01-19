@@ -24,7 +24,7 @@ model User {
   profileTestId String[]  @db.ObjectId
   createdAt     DateTime  @default(now())
 
-  friends          Friend      @relation(fields: [friendsIds], references: [id])
+  relationFriends  Friend      @relation(fields: [friendsIds], references: [id])
   profileTest      ProfileTest @relation(fields: [profileTestId], references: [id])
   feedbackFromUser Feedback[]  @relation("feedbackFromUser")
   feedbackToUser   Feedback[]  @relation("feedbackToUser")
@@ -33,11 +33,13 @@ model User {
 }
 
 model Friend {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String
-  comment String
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String
+  friendId        String
+  comment         String?
+  waitingResponse String
 
-  user User[]
+  relationUser User[]
 }
 
 model ProfileTest {
