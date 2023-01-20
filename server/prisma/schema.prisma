@@ -24,10 +24,10 @@ model User {
   profileTestId String[]  @db.ObjectId
   createdAt     DateTime  @default(now())
 
-  relationFriends  Friend      @relation(fields: [friendsIds], references: [id])
-  profileTest      ProfileTest @relation(fields: [profileTestId], references: [id])
-  feedbackFromUser Feedback[]  @relation("feedbackFromUser")
-  feedbackToUser   Feedback[]  @relation("feedbackToUser")
+  relationFriends          Friend      @relation(fields: [friendsIds], references: [id])
+  profileTest              ProfileTest @relation(fields: [profileTestId], references: [id])
+  relationFeedbackFromUser Feedback[]  @relation("feedbackFromUser")
+  relationFeedbackToUser   Feedback[]  @relation("feedbackToUser")
 
   @@unique([profileTestId])
 }
@@ -55,23 +55,23 @@ model Feedback {
   toUserId     String   @db.ObjectId
   feedbacksIds String[] @db.ObjectId
 
-  fromUser     User         @relation("feedbackFromUser", fields: [fromUserId], references: [id])
-  toUser       User         @relation("feedbackToUser", fields: [toUserId], references: [id])
-  feedbackData FeedbackData @relation(fields: [feedbacksIds], references: [id])
+  relationFromUser    User         @relation("feedbackFromUser", fields: [fromUserId], references: [id])
+  relationToUser      User         @relation("feedbackToUser", fields: [toUserId], references: [id])
+  reationFeedbackData FeedbackData @relation(fields: [feedbacksIds], references: [id])
 }
 
 model FeedbackData {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   date              DateTime
-  accept            Boolean
-  currentPost       String
+  status            String
+  currentRole       String
   comments          String
-  usersIndicatorsId String   @db.ObjectId
+  usersIndicatorsId String?  @db.ObjectId
   actionPlansIds    String[] @db.ObjectId
 
-  usersIndicators UsersIndicators? @relation(fields: [usersIndicatorsId], references: [id])
-  actionPlans     ActionPlan       @relation(fields: [actionPlansIds], references: [id])
-  feedback        Feedback[]
+  relationUsersIndicators UsersIndicators? @relation(fields: [usersIndicatorsId], references: [id])
+  relationActionPlans     ActionPlan       @relation(fields: [actionPlansIds], references: [id])
+  relationFeedback        Feedback[]
 
   @@unique([usersIndicatorsId])
 }
@@ -81,9 +81,9 @@ model UsersIndicators {
   templateId String   @db.ObjectId
   valuesIds  String[] @db.ObjectId
 
-  indicatorTemplate IndicatorTemplate @relation(fields: [templateId], references: [id])
-  indicatorValue    IndicatorValue    @relation(fields: [valuesIds], references: [id])
-  feedbackData      FeedbackData?
+  relationIndicatorTemplate IndicatorTemplate @relation(fields: [templateId], references: [id])
+  relationIndicatorValue    IndicatorValue    @relation(fields: [valuesIds], references: [id])
+  relationFeedbackData      FeedbackData?
 }
 
 model IndicatorTemplate {
@@ -91,8 +91,8 @@ model IndicatorTemplate {
   name                   String
   indicatorsCategorysIds String[] @db.ObjectId
 
-  indicatorCategory IndicatorCategory @relation(fields: [indicatorsCategorysIds], references: [id])
-  usersIndicators   UsersIndicators[]
+  relationIndicatorCategory IndicatorCategory @relation(fields: [indicatorsCategorysIds], references: [id])
+  relationUsersIndicators   UsersIndicators[]
 }
 
 model IndicatorCategory {
@@ -100,8 +100,8 @@ model IndicatorCategory {
   name               String
   indicatorsTypesIds String[] @db.ObjectId
 
-  indicatorType     IndicatorType       @relation(fields: [indicatorsTypesIds], references: [id])
-  indicatorTemplate IndicatorTemplate[]
+  relationIndicatorType     IndicatorType       @relation(fields: [indicatorsTypesIds], references: [id])
+  relationIndicatorTemplate IndicatorTemplate[]
 }
 
 model IndicatorType {
@@ -113,8 +113,8 @@ model IndicatorType {
   descriptionN4 String
   descriptionN5 String
 
-  indicatorCategory IndicatorCategory[]
-  indicatorValue    IndicatorValue[]
+  relationIndicatorCategory IndicatorCategory[]
+  relationIndicatorValue    IndicatorValue[]
 }
 
 model IndicatorValue {
@@ -122,8 +122,8 @@ model IndicatorValue {
   value              Int
   indicatorsTypesIds String[] @db.ObjectId
 
-  indicatorType   IndicatorType     @relation(fields: [indicatorsTypesIds], references: [id])
-  usersIndicators UsersIndicators[]
+  relationIndicatorType   IndicatorType     @relation(fields: [indicatorsTypesIds], references: [id])
+  relationUsersIndicators UsersIndicators[]
 }
 
 model ActionPlan {
@@ -131,5 +131,5 @@ model ActionPlan {
   action   String
   realized Boolean
 
-  feedbackData FeedbackData[]
+  relationFeedbackData FeedbackData[]
 }

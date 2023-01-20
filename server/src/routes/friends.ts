@@ -4,9 +4,11 @@ import {z} from "zod";
 import { STATUS } from "../config/friendsVariables";
 
 export async function friendsRoutes(fastify: FastifyInstance){
+
+  // ************************************ create a new friendship
   fastify.post('/friend', async (request, reply) => {
 
-    // -------------------- validate variables
+    // --- validate variables
     const getFriendsParams = z.object({
         fromUserId: z.string(),
         toUserEmail: z.string()
@@ -27,10 +29,10 @@ export async function friendsRoutes(fastify: FastifyInstance){
     });
 
     if(!fromUser || !toUser || fromUser.id === toUser.id ){
-      return reply.status(400).send("Usuário não encontrado");
+      return reply.status(400).send("User not found");
     }
 
-    // -------------------- validate friendship 
+    // --- validate friendship 
     const fromFriend = await prisma.friend.findMany({
       where : {
         userId: fromUser.id,
@@ -46,10 +48,10 @@ export async function friendsRoutes(fastify: FastifyInstance){
     });
 
     if(fromFriend.length > 0 || toFriend.length > 0){
-      return reply.status(400).send("Solicitação de amizade já enviada");
+      return reply.status(400).send("Friendship request has already been sent");
     }
 
-    // -------------------- create from user friend
+    // --- create from user friend
     const fromUserFriend = await prisma.friend.create({
       data: {
         userId: fromUser.id,
@@ -77,7 +79,7 @@ export async function friendsRoutes(fastify: FastifyInstance){
       }
     });
 
-    // -------------------- create to user friend
+    // --- create to user friend
     const toUserFriend = await prisma.friend.create({
       data: {
         userId: toUser.id,
@@ -107,6 +109,82 @@ export async function friendsRoutes(fastify: FastifyInstance){
 
     return reply.status(201).send(fromUserFriend);
   });
+
+  // ************************************ get friendships
+  fastify.get('/friend/:userId', async (request, reply) => {
+
+    // --- validate variables
+    const getUserParams = z.object({
+        userId: z.string()
+    });
+
+    const {userId} = getUserParams.parse(request.params);
+    
+    // --- search for friends
+    const friends = await prisma.friend.findMany({
+      where : {
+        userId: userId
+      }
+    });
+
+    return reply.status(201).send(friends);
+  });
+
+  // ************************************ accept friendship
+  fastify.post('/friend/accept', async (request, reply) => {
+
+    // --- validate variables
+    const getFriendParams = z.object({
+        id: z.string(),
+        acceptingUserId: z.string()
+    });
+
+    const {id, acceptingUserId} = getFriendParams.parse(request.body);
+    
+    const acceptingFriend = await prisma.friend.findUnique({
+      where : {
+        id: id
+      }
+    });
+
+    const sendingFriend = await prisma.friend.findFirst({
+      where : {
+        userId: acceptingFriend?.friendId,
+        friendId: acceptingFriend?.userId
+      }
+    });
+
+    if(!acceptingFriend || !sendingFriend){
+      return reply.status(400).send("Friendship request not found");
+    }
+
+    if(acceptingFriend.waitingResponse !== acceptingUserId || sendingFriend.waitingResponse !== acceptingUserId){
+      return reply.status(400).send("The user can't accept this friendship request");
+    }
+
+    // --- update friendship
+    const updatedAcceptingFriend = await prisma.friend.update({
+      where: {
+        id: acceptingFriend.id
+      },
+      data: {
+        waitingResponse: STATUS.ACCEPT 
+      }
+    });
+
+    const updatedSendingFriend = await prisma.friend.update({
+      where: {
+        id: sendingFriend.id
+      },
+      data: {
+        waitingResponse: STATUS.ACCEPT 
+      }
+    });
+
+    return reply.status(201).send({updatedAcceptingFriend, updatedSendingFriend});
+  });
+
+
   
 };
 

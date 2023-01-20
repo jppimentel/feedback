@@ -21,7 +21,7 @@ export async function userRoutes(fastify: FastifyInstance){
     });
 
     if(user){
-      return reply.status(201).send("Usuário já cadastrado");
+      return reply.status(400).send("User already registered");
     }
 
     await prisma.user.create({
@@ -33,16 +33,8 @@ export async function userRoutes(fastify: FastifyInstance){
       }
     });
 
-    
-
     return reply.status(201).send(inputUser);
   });
   
-  fastify.get('/users/count', async () => {
-    // const count = await prisma.user.count();   
-    console.log("teste usuários");
-
-    return "count";
-  });
 };
 
