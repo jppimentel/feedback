@@ -3,6 +3,7 @@ import {prisma} from "../lib/prisma";
 import {z} from "zod";
 
 export async function userRoutes(fastify: FastifyInstance){
+  // ************************************ create user
   fastify.post('/user', async (request, reply) => {
 
     const getUserParams = z.object({
@@ -34,6 +35,30 @@ export async function userRoutes(fastify: FastifyInstance){
     });
 
     return reply.status(201).send(inputUser);
+  });
+
+  // ************************************ get user
+  fastify.get('/user/:userId', async (request, reply) => {
+
+    // --- validate variables
+    const getUserParams = z.object({
+        userId: z.string()
+    });
+
+    const {userId} = getUserParams.parse(request.params);
+    
+    // --- search for friends
+    const user = await prisma.user.findUnique({
+      where : {
+        id: userId
+      },
+      include: {
+        friends: true,
+        friendBy: true
+      }
+    });
+
+    return reply.status(201).send(user);
   });
   
 };

@@ -16,10 +16,13 @@ export async function feedbackRoutes(fastify: FastifyInstance){
 
     const {userId} = getFeedbackParams.parse(request.params);
     
-    // --- search for friends
+    // --- search for feedback
     const feedbacks = await prisma.feedback.findMany({
       where : {
         fromUserId: userId
+      },
+      include: {
+        feedbacksData: true
       }
     });
 
@@ -36,10 +39,13 @@ export async function feedbackRoutes(fastify: FastifyInstance){
 
     const {userId} = getFeedbackParams.parse(request.params);
     
-    // --- search for friends
+    // --- search for feedback
     const feedbacks = await prisma.feedback.findMany({
       where : {
         toUserId: userId
+      },
+      include: {
+        feedbacksData: true
       }
     });
 
@@ -60,17 +66,6 @@ export async function feedbackRoutes(fastify: FastifyInstance){
 
     const inputFeedback = getFeedbackParams.parse(request.body);
     
-    // --- create feedback data
-    let createdFeedback;
-    let createdFeedbackData = await prisma.feedbackData.create({
-      data: {
-        date: inputFeedback.date,
-        currentRole: inputFeedback.currentRole,
-        comments: inputFeedback.comments,
-        status: STATUS.WAITING
-      }
-    });
-    
     // --- search feedback
     const searchFeedback = await prisma.feedback.findFirst({
       where : {
@@ -80,13 +75,9 @@ export async function feedbackRoutes(fastify: FastifyInstance){
     });
     
     // --- update/create feedback
+    let createdFeedback;
     if(searchFeedback){
-      if(searchFeedback?.feedbacksIds && searchFeedback.feedbacksIds.length > 0){
-        searchFeedback.feedbacksIds.push(createdFeedbackData.id)
-      } else {
-        searchFeedback.feedbacksIds = [createdFeedbackData.id]
-      }
-
+      
       createdFeedback = await prisma.feedback.update({
         where: {
           id: searchFeedback.id
@@ -94,7 +85,16 @@ export async function feedbackRoutes(fastify: FastifyInstance){
         data: {
           fromUserId: inputFeedback.fromUserId,
           toUserId:inputFeedback.toUserId,
-          feedbacksIds: searchFeedback.feedbacksIds
+          feedbacksData: {
+            create: [
+              {
+                date: inputFeedback.date,
+                currentRole: inputFeedback.currentRole,
+                comments: inputFeedback.comments,
+                status: STATUS.WAITING
+              }
+            ]
+          }
         }
       });
 
@@ -103,12 +103,69 @@ export async function feedbackRoutes(fastify: FastifyInstance){
         data: {
           fromUserId: inputFeedback.fromUserId,
           toUserId:inputFeedback.toUserId,
-          feedbacksIds: [createdFeedbackData.id]
+          feedbacksData: {
+            create: [
+              {
+                date: inputFeedback.date,
+                currentRole: inputFeedback.currentRole,
+                comments: inputFeedback.comments,
+                status: STATUS.WAITING
+              }
+            ]
+          }
         }
       });
     }
 
     return reply.status(201).send(createdFeedback);
+  });
+
+  // ************************************ accept feedback
+  fastify.post('/feedback/accept', async (request, reply) => {
+
+    // --- validate variables
+    const getFeedbackParams = z.object({
+        id: z.string(),
+        acceptingUserId: z.string(),
+        status: z.string()
+    });
+
+    const {id, acceptingUserId, status} = getFeedbackParams.parse(request.body);
+    
+    const acceptingFeedback = await prisma.feedbackData.findUnique({
+      where : {
+        id: id
+      },
+      include: {
+        feedback: true
+      }
+    });
+
+
+    if(!acceptingFeedback){
+      return reply.status(400).send("Feedback not found");
+    }
+
+    if(acceptingFeedback.feedback?.toUserId !== acceptingUserId){
+      return reply.status(400).send("The user can't accept this feedback");
+    }
+
+    if(status !== STATUS.ACCEPT && status !== STATUS.DENIED){
+      return reply.status(400).send("The status can't be accepted");
+    }
+
+    // --- update feedback
+    const updatedFeedback = await prisma.feedbackData.update({
+      where: {
+        id: acceptingFeedback.id
+      },
+      data: {
+        status: status 
+      }
+    });
+
+
+    return reply.status(201).send(updatedFeedback);
   });
 
 

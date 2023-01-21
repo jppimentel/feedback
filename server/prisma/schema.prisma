@@ -20,11 +20,11 @@ model User {
   email         String    @unique
   actualCompany String?   @unique
   birthDate     DateTime?
-  friendsIds    String[]  @db.ObjectId
   profileTestId String[]  @db.ObjectId
   createdAt     DateTime  @default(now())
+  friends       Friend[]  @relation("userFriends")
+  friendBy      Friend[]  @relation("friendBy")
 
-  relationFriends          Friend      @relation(fields: [friendsIds], references: [id])
   profileTest              ProfileTest @relation(fields: [profileTestId], references: [id])
   relationFeedbackFromUser Feedback[]  @relation("feedbackFromUser")
   relationFeedbackToUser   Feedback[]  @relation("feedbackToUser")
@@ -34,12 +34,14 @@ model User {
 
 model Friend {
   id              String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String
-  friendId        String
   comment         String?
   waitingResponse String
 
-  relationUser User[]
+  userId String? @db.ObjectId
+  user   User?   @relation("userFriends", fields: [userId], references: [id])
+
+  friendUserId String? @db.ObjectId
+  friendUser   User?   @relation("friendBy", fields: [friendUserId], references: [id])
 }
 
 model ProfileTest {
@@ -50,14 +52,13 @@ model ProfileTest {
 }
 
 model Feedback {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  fromUserId   String   @db.ObjectId
-  toUserId     String   @db.ObjectId
-  feedbacksIds String[] @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  fromUserId    String         @db.ObjectId
+  toUserId      String         @db.ObjectId
+  feedbacksData FeedbackData[]
 
-  relationFromUser    User         @relation("feedbackFromUser", fields: [fromUserId], references: [id])
-  relationToUser      User         @relation("feedbackToUser", fields: [toUserId], references: [id])
-  reationFeedbackData FeedbackData @relation(fields: [feedbacksIds], references: [id])
+  relationFromUser User @relation("feedbackFromUser", fields: [fromUserId], references: [id])
+  relationToUser   User @relation("feedbackToUser", fields: [toUserId], references: [id])
 }
 
 model FeedbackData {
@@ -69,9 +70,11 @@ model FeedbackData {
   usersIndicatorsId String?  @db.ObjectId
   actionPlansIds    String[] @db.ObjectId
 
+  feedbackId String?   @db.ObjectId
+  feedback   Feedback? @relation(fields: [feedbackId], references: id)
+
   relationUsersIndicators UsersIndicators? @relation(fields: [usersIndicatorsId], references: [id])
-  relationActionPlans     ActionPlan       @relation(fields: [actionPlansIds], references: [id])
-  relationFeedback        Feedback[]
+  relationActionPlans     ActionPlan?      @relation(fields: [actionPlansIds], references: [id])
 
   @@unique([usersIndicatorsId])
 }
