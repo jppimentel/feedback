@@ -5,7 +5,7 @@ import styles from '../styles/Home.module.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function AppWeb() {
+export default function Myfriends() {
   return (
     <>
       <Head>
@@ -15,13 +15,7 @@ export default function AppWeb() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <p>Aqui, criar a tela de login</p>
-        <p>Junto ao login, mostrar a opção de cadastro</p>
-        <p>Se logar com sucesso, mostrar botões abaixo:</p>
-        <p>Minhas Informações</p>
-        <p>Feedbacks Enviados</p>
-        <p>Feedbacks Recebidos</p>
-        <p>Meus Amigos</p>
+        <p>Inserir Tela de Amigos</p>
         
       </main>
     </>
