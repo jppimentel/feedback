@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx src/server.ts",
+    "build": "tsup src"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^9.3.0",
+    "@types/jsonwebtoken": "^9.0.2",
     "prisma": "^4.8.1",
     "prisma-erd-generator": "^1.2.4",
     "tsx": "^3.12.2",
@@ -19,6 +21,9 @@
   "dependencies": {
     "@prisma/client": "^4.8.1",
     "fastify": "^4.11.0",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
+    "tsup": "^6.7.0",
     "zod": "^3.20.2"
   }
 }
