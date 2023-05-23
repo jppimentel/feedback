@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/server.ts",
-    "build": "tsup src"
+    "dev": "tsx src/server.ts"
   },
   "keywords": [],
   "author": "",
