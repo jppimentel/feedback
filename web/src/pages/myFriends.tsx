@@ -1,9 +1,30 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '../styles/Home.module.css'
+import Navbar from '../components/navbar'
+import ListCards from '../components/listCards';
+import { FaPlus } from 'react-icons/fa'
 
-const inter = Inter({ subsets: ['latin'] })
+const friends = [
+  {
+    friend: 'João das Neves',
+    age: '23',
+    company: 'Gugle',
+    approved: true
+
+  },
+  {
+    friend: 'Maria das Flores',
+    age: '19',
+    company: 'Gugle',
+    approved: false
+  },
+  {
+    friend: 'Apolinário do Rio',
+    age: '32',
+    company: 'Feici',
+    approved: true
+  },
+];
+
 
 export default function Myfriends() {
   return (
@@ -14,10 +35,26 @@ export default function Myfriends() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <p>Inserir Tela de Amigos</p>
-        
+      <main className='h-screen'>
+        <Navbar activeButton='myFriends' />
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center justify-between mb-4 mt-4">
+            <h1 className="text-2xl text-gray-800 font-bold ml-4">Meus Amigos</h1>
+            <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center">
+              <FaPlus className="text-lg" />
+            </button>
+          </div>
+          {friends.map((friend, index) => (
+            <ListCards 
+              index={"friend"+index}
+              title={friend.friend}
+              approved={friend.approved}
+              info1={friend.age + " anos"}
+              info2={friend.company}
+            />
+          ))}
+        </div>
       </main>
     </>
-  )
+  );
 }
