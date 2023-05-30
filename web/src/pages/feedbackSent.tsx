@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import Navbar from '../components/navbar'
-import ListCards from '../components/listCards';
+import ListCards from '../components/listCards'
+import AddItem from '../components/addItem'
+import AddFeedback from '../components/addFeedback'
 import { FaPlus } from 'react-icons/fa'
 
 const feedbacks = [
@@ -40,9 +42,10 @@ export default function FeedbackSent() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Feedbacks Enviados</h1>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center">
+            {/* <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center">
               <FaPlus className="text-lg" />
-            </button>
+            </button> */}
+            <AddItem> <AddFeedback /> </AddItem>
           </div>
           {feedbacks.map((feedback, index) => (
             <ListCards 

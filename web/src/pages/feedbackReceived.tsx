@@ -34,9 +34,6 @@ export default function FeedbackReceived() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Feedbacks Recebidos</h1>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center">
-              <FaPlus className="text-lg" />
-            </button>
           </div>
           {feedbacks.map((feedback, index) => (
             <ListCards 

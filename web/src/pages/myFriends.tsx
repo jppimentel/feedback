@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import Head from 'next/head'
 import Navbar from '../components/navbar'
-import ListCards from '../components/listCards';
-import { FaPlus } from 'react-icons/fa'
+import AddItem from '../components/addItem'
+import ListCards from '../components/listCards'
+import AddFriend from '../components/addFriend';
 
 const friends = [
   {
@@ -26,7 +28,9 @@ const friends = [
 ];
 
 
+
 export default function Myfriends() {
+  
   return (
     <>
       <Head>
@@ -40,9 +44,7 @@ export default function Myfriends() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Meus Amigos</h1>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center">
-              <FaPlus className="text-lg" />
-            </button>
+            <AddItem> <AddFriend /> </AddItem>
           </div>
           {friends.map((friend, index) => (
             <ListCards 
