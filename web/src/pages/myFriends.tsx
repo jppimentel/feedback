@@ -3,27 +3,31 @@ import Head from 'next/head'
 import Navbar from '../components/navbar'
 import AddItem from '../components/addItem'
 import ListCards from '../components/listCards'
-import AddFriend from '../components/addFriend';
+import AddFriend from '../components/addFriend'
+import AcceptFriend from '../components/acceptFriend'
 
 const friends = [
   {
     friend: 'João das Neves',
     age: '23',
     company: 'Gugle',
-    approved: true
+    approvalSent: true,
+    approvalWaiting: false
 
   },
   {
     friend: 'Maria das Flores',
     age: '19',
     company: 'Gugle',
-    approved: false
+    approvalSent: false,
+    approvalWaiting: true
   },
   {
     friend: 'Apolinário do Rio',
     age: '32',
     company: 'Feici',
-    approved: true
+    approvalSent: false,
+    approvalWaiting: false
   },
 ];
 
@@ -50,10 +54,14 @@ export default function Myfriends() {
             <ListCards 
               index={"friend"+index}
               title={friend.friend}
-              approved={friend.approved}
               info1={friend.age + " anos"}
               info2={friend.company}
-            />
+              approvalSent={friend.approvalSent}
+              approvalWaiting={friend.approvalWaiting}
+              feedbackCards={false}
+            >
+              <AcceptFriend friendName={friend.friend}></AcceptFriend>
+            </ListCards>
           ))}
         </div>
       </main>

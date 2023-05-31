@@ -8,14 +8,13 @@ const feedbacks = [
     leader: 'João das Neves',
     lastFeedback: '05/12/2022',
     totalFeedbacks: '1',
-    approved: true
-
+    approvalWaiting: false
   },
   {
     leader: 'Maria das Flores',
     lastFeedback: '23/05/2023',
     totalFeedbacks: '4',
-    approved: false
+    approvalWaiting: false
   }
 ];
 
@@ -39,10 +38,13 @@ export default function FeedbackReceived() {
             <ListCards 
               index={"received"+index}
               title={"Orientador: "+feedback.leader}
-              approved={feedback.approved}
               info1={"Último Feedback: "+feedback.lastFeedback}
               info2={"Total de Feedbacks: "+feedback.totalFeedbacks}
-            />
+              approvalSent={false}
+              approvalWaiting={feedback.approvalWaiting}
+              feedbackCards={false}
+            >
+            </ListCards>
           ))}
         </div>
       </main>

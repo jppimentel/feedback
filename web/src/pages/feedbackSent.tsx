@@ -3,6 +3,7 @@ import Navbar from '../components/navbar'
 import ListCards from '../components/listCards'
 import AddItem from '../components/addItem'
 import AddFeedback from '../components/addFeedback'
+import FeedbackCard from '../components/feedbacksCards'
 import { FaPlus } from 'react-icons/fa'
 
 const feedbacks = [
@@ -10,21 +11,44 @@ const feedbacks = [
     collaborator: 'João das Neves',
     lastFeedback: '05/12/2022',
     totalFeedbacks: '1',
-    approved: true
+    approvalSent: true
 
   },
   {
     collaborator: 'Maria das Flores',
     lastFeedback: '23/05/2023',
     totalFeedbacks: '4',
-    approved: false
+    approvalSent: false
   },
   {
     collaborator: 'Apolinário do Rio',
     lastFeedback: '01/02/2023',
     totalFeedbacks: '2',
-    approved: true
+    approvalSent: false
   },
+];
+
+const cards = [
+  {
+    post: 'Card 1',
+    date: '01/01/2023',
+    comment: 'Ótimo funcionário',
+  },
+  {
+    post: 'Card 2',
+    date: '01/01/2023',
+    comment: 'Ótimo funcionário',
+  },
+  {
+    post: 'Card 3',
+    date: '01/01/2023',
+    comment: 'Ótimo funcionário',
+  },
+  {
+    post: 'Card 4',
+    date: '01/01/2023',
+    comment: 'Ótimo funcionário',
+  }
 ];
 
 
@@ -42,19 +66,20 @@ export default function FeedbackSent() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Feedbacks Enviados</h1>
-            {/* <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center">
-              <FaPlus className="text-lg" />
-            </button> */}
-            <AddItem> <AddFeedback /> </AddItem>
+            <AddItem> <AddFeedback startUser={null}/> </AddItem>
           </div>
           {feedbacks.map((feedback, index) => (
             <ListCards 
               index={"sent"+index}
               title={feedback.collaborator}
-              approved={feedback.approved}
               info1={"Último Feedback: "+feedback.lastFeedback}
               info2={"Total de Feedbacks: "+feedback.totalFeedbacks}
-            />
+              approvalSent={feedback.approvalSent}
+              approvalWaiting={false}
+              feedbackCards={true}
+            >
+              <FeedbackCard feedbacks={cards} collaborator={feedback.collaborator}/>
+            </ListCards>
           ))}
         </div>
       </main>

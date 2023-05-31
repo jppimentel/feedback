@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 
-const FormComponent: React.FC = () => {
+interface AddFeedbackProps {
+  startUser: string | null
+}
+
+// const AddFeedback: React.FC = () => {
+const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
   const [position, setPosition] = useState('');
@@ -56,10 +61,19 @@ const FormComponent: React.FC = () => {
               onChange={handleUserChange}
               className="border border-gray-300 rounded px-2 py-1"
             >
-              <option value="">Selecione um usuário</option>
-              <option value="user1">Usuário 1</option>
-              <option value="user2">Usuário 2</option>
-              <option value="user3">Usuário 3</option>
+              {startUser && (
+                <option value="">{startUser}</option>
+              )}
+
+              {!startUser && (
+                <>
+                  <option value="">Selecione o Usuário</option>
+                  <option value="user1">Usuário 1</option>
+                  <option value="user2">Usuário 2</option>
+                  <option value="user3">Usuário 3</option>
+                </>
+              )}
+              
             </select>
           </div>
 
@@ -114,4 +128,4 @@ const FormComponent: React.FC = () => {
   );
 };
 
-export default FormComponent;
+export default AddFeedback;
