@@ -1,11 +1,28 @@
+import React, { useState } from 'react';
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '../styles/Home.module.css'
+import Link from 'next/link'
 
-const inter = Inter({ subsets: ['latin'] })
 
 export default function AppWeb() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleLogin = () => {
+    // Lógica para processar o login
+  };
+
+  const handleSignUp = () => {
+    // Lógica para redirecionar para a página de cadastro
+  };
+
   return (
     <>
       <Head>
@@ -14,16 +31,42 @@ export default function AppWeb() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <p>Aqui, criar a tela de login</p>
-        <p>Junto ao login, mostrar a opção de cadastro</p>
-        <p>Se logar com sucesso, mostrar botões abaixo:</p>
-        <p>Minhas Informações</p>
-        <p>Feedbacks Enviados</p>
-        <p>Feedbacks Recebidos</p>
-        <p>Meus Amigos</p>
-        
+      <main className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
+        <div className="max-w-md w-full px-6 py-8 rounded-lg">
+          <div className="flex flex-col items-center">
+          <h1 className='text-white text-5xl font-bold mb-32'>meufeedback.com</h1>
+            <input
+              type="email"
+              className="border border-gray-300 px-3 py-2 rounded-md mb-4 w-60"
+              placeholder="Email"
+              value={email}
+              onChange={handleEmailChange}
+            />
+            <input
+              type="password"
+              className="border border-gray-300 px-3 py-2 rounded-md mb-4 w-60"
+              placeholder="Password"
+              value={password}
+              onChange={handlePasswordChange}
+            />
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-md w-60 mb-4"
+              onClick={handleLogin}
+            >
+              Login
+            </button>
+            <Link href={'/register'}>
+              <button
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-md w-60"
+                onClick={handleSignUp}
+              >
+                Cadastro
+              </button>
+            </Link>
+          </div>
+        </div>
       </main>
     </>
   )
 }
+
