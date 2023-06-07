@@ -1,6 +1,9 @@
+import React, { useEffect } from 'react'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useAuthentication } from '../components/useAuthentication'
 
 const linkButton = (buttonName:string, link:string) => {
   return(
@@ -16,6 +19,23 @@ const linkButton = (buttonName:string, link:string) => {
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { authenticated, isLoading } = useAuthentication();
+
+  useEffect(() => {
+    if (!authenticated && !isLoading) {
+      router.push('/login');
+    }
+  }, [authenticated, isLoading, router]);
+
+  if (isLoading) {
+    return <div>Carregando...</div>;
+  }
+
+  if (!authenticated) {
+    return <div>Você não está autenticado.</div>;
+  }
+  
   return (
     <>
       <Head>

@@ -1,3 +1,6 @@
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { useAuthentication } from '../components/useAuthentication'
 import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
@@ -7,6 +10,23 @@ import Navbar from '../components/navbar'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function MyInformations() {
+  const router = useRouter();
+  const { authenticated, isLoading } = useAuthentication();
+
+  useEffect(() => {
+    if (!authenticated && !isLoading) {
+      router.push('/');
+    }
+  }, [authenticated, isLoading, router]);
+
+  if (isLoading) {
+    return <div>Carregando...</div>;
+  }
+
+  if (!authenticated) {
+    return <div>Você não está autenticado.</div>;
+  }
+  
   return (
     <>
       <Head>

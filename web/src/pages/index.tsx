@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import {defaultApi} from "../services/defaultApi"
+import { useRouter } from 'next/router'
 
 
 export default function AppWeb() {
+  const router = useRouter();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,12 +19,23 @@ export default function AppWeb() {
     setPassword(e.target.value);
   };
 
-  const handleLogin = () => {
-    // Lógica para processar o login
+  const handleLogin = async () => {
+    await defaultApi
+      .post("/login", {
+        email: email,
+        password: password,
+      })
+      .then((data) => {
+        localStorage.setItem('token', data.data);
+        router.push('/home');
+        
+      }).catch(err => {
+        console.log("error: "+err)
+      });
   };
 
   const handleSignUp = () => {
-    // Lógica para redirecionar para a página de cadastro
+    router.push('/register');
   };
 
   return (
