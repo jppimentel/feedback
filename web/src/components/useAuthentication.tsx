@@ -32,6 +32,7 @@ export function useAuthentication() {
               setTokenIssuedAt(new Date());
               localStorage.setItem('tokenIssuedAt', new Date().toISOString());
               localStorage.setItem('isTokenValid', 'true');
+              localStorage.setItem('userId', data.data.id);
             } else {
               setAuthenticated(false);
               setIsTokenValid(false);

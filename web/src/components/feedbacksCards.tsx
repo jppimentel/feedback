@@ -1,5 +1,5 @@
-import React, { useState, ReactNode } from 'react'
-import { BiSearchAlt2 } from 'react-icons/bi'
+import React, { useState, ReactNode } from 'react';
+import { BiSearchAlt2 } from 'react-icons/bi';
 import CardGrid from './cardGrid';
 
 interface Feedback {

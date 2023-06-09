@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
-import AddFeedback from '../components/addFeedback'
+import AddFeedback from '../components/addFeedback';
 
 interface CardProps {
   post: string;

@@ -1,49 +1,54 @@
-import React, { useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { useAuthentication } from '../components/useAuthentication'
-import Head from 'next/head'
-import Navbar from '../components/navbar'
-import AddItem from '../components/addItem'
-import ListCards from '../components/listCards'
-import AddFriend from '../components/addFriend'
-import AcceptFriend from '../components/acceptFriend'
-
-const friends = [
-  {
-    friend: 'João das Neves',
-    age: '23',
-    company: 'Gugle',
-    approvalSent: true,
-    approvalWaiting: false
-
-  },
-  {
-    friend: 'Maria das Flores',
-    age: '19',
-    company: 'Gugle',
-    approvalSent: false,
-    approvalWaiting: true
-  },
-  {
-    friend: 'Apolinário do Rio',
-    age: '32',
-    company: 'Feici',
-    approvalSent: false,
-    approvalWaiting: false
-  },
-];
-
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useAuthentication } from '../components/useAuthentication';
+import Head from 'next/head';
+import Navbar from '../components/navbar';
+import AddItem from '../components/addItem';
+import ListCards from '../components/listCards';
+import AddFriend from '../components/addFriend';
+import AcceptFriend from '../components/acceptFriend';
+import {defaultApi} from "../services/defaultApi";
 
 
 export default function Myfriends() {
   const router = useRouter();
   const { authenticated, isLoading } = useAuthentication();
+  const [noFriends, setNoFriends] = useState(false);
+  const [loadedFriends, setLoadedFriends] = useState(false);
+  const [lastFriendAccepted, setLastFriendAccepted] = useState("");
+  const [friends, setFriends] = useState<any[]>([]);
+
+  const handleFriendAccepted = (friendshipId: string) => {
+    setLastFriendAccepted(friendshipId);
+  };
+  
 
   useEffect(() => {
     if (!authenticated && !isLoading) {
       router.push('/');
     }
   }, [authenticated, isLoading, router]);
+
+  useEffect(() => {
+    const getFriends = async () => {
+      await defaultApi
+      .get("/friend/"+localStorage.getItem('userId'),{})
+      .then((data) => {
+        setFriends(data.data);
+        setLoadedFriends(true);
+        if(data && data.data && data.data.length === 0){
+          setNoFriends(true);
+        }
+        console.log("friends received now: "+ JSON.stringify(friends))
+      }).catch(err => {
+        console.log("error: "+err);
+      });
+
+    }
+    if (localStorage.getItem('isTokenValid') && localStorage.getItem('userId')) {
+      getFriends();
+    }
+  }, [lastFriendAccepted]);
 
   if (isLoading) {
     return <div>Carregando...</div>;
@@ -66,23 +71,56 @@ export default function Myfriends() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Meus Amigos</h1>
-            <AddItem> <AddFriend /> </AddItem>
+            <AddItem> <AddFriend onFriendSent={handleFriendAccepted}/> </AddItem>
           </div>
-          {friends.map((friend, index) => (
+          {noFriends === false && loadedFriends === true && friends.map((friend, index) => (
             <ListCards 
+              key={"friend"+index}  
               index={"friend"+index}
-              title={friend.friend}
-              info1={friend.age + " anos"}
-              info2={friend.company}
-              approvalSent={friend.approvalSent}
-              approvalWaiting={friend.approvalWaiting}
+              title={friend.friendUser.name}
+              info1={calculateAge(friend.friendUser.birthDate) + " anos"}
+              info2={friend.friendUser.actualCompany}
+              approvalSent={(friend.waitingResponse === "ACCEPT" || friend.waitingResponse === friend.userId) ? false : true}
+              approvalWaiting={(friend.waitingResponse === "ACCEPT" || friend.waitingResponse !== friend.userId) ? false : true}
               feedbackCards={false}
             >
-              <AcceptFriend friendName={friend.friend}></AcceptFriend>
+              <AcceptFriend 
+                friendName={friend.friendUser.name}
+                userId={friend.userId}
+                friendshipId={friend.id}
+                onFriendAccepted={handleFriendAccepted}
+                ></AcceptFriend>
             </ListCards>
           ))}
+          {noFriends === false && loadedFriends === false && (
+            <p className='ml-4'>Carregando...</p>
+          )}
+
+          {noFriends === true && loadedFriends === true && (
+            <p className='ml-4'>Você ainda não tem amigos.</p>
+          )}
         </div>
       </main>
     </>
   );
+}
+
+function calculateAge(dateOfBirth: string): number {
+  const birthDate = new Date(dateOfBirth);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const currentMonth = today.getMonth();
+  const currentDay = today.getDate();
+  const birthMonth = birthDate.getMonth();
+  const birthDay = birthDate.getDate();
+
+  if (
+    currentMonth < birthMonth ||
+    (currentMonth === birthMonth && currentDay < birthDay)
+  ) {
+    age--;
+  }
+
+  return age;
 }

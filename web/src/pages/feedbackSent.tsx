@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { useAuthentication } from '../components/useAuthentication'
-import Head from 'next/head'
-import Navbar from '../components/navbar'
-import ListCards from '../components/listCards'
-import AddItem from '../components/addItem'
-import AddFeedback from '../components/addFeedback'
-import FeedbackCard from '../components/feedbacksCards'
-import { FaPlus } from 'react-icons/fa'
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useAuthentication } from '../components/useAuthentication';
+import Head from 'next/head';
+import Navbar from '../components/navbar';
+import ListCards from '../components/listCards';
+import AddItem from '../components/addItem';
+import AddFeedback from '../components/addFeedback';
+import FeedbackCard from '../components/feedbacksCards';
 
 const feedbacks = [
   {
@@ -90,6 +89,7 @@ export default function FeedbackSent() {
           </div>
           {feedbacks.map((feedback, index) => (
             <ListCards 
+              key={"sent"+index}    
               index={"sent"+index}
               title={feedback.collaborator}
               info1={"Último Feedback: "+feedback.lastFeedback}

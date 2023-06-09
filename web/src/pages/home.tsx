@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
-import Head from 'next/head'
+import React, { useEffect } from 'react';
+import Head from 'next/head';
 import styles from '../styles/Home.module.css'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useAuthentication } from '../components/useAuthentication'
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useAuthentication } from '../components/useAuthentication';
 
 const linkButton = (buttonName:string, link:string) => {
   return(
@@ -24,7 +24,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!authenticated && !isLoading) {
-      router.push('/login');
+      router.push('/');
     }
   }, [authenticated, isLoading, router]);
 

@@ -1,13 +1,35 @@
 import React, { useState, ReactNode } from 'react';
-import { FaPlus } from 'react-icons/fa';
+import {defaultApi} from "../services/defaultApi";
 
 interface AcceptFriendProps {
-  // children: ReactNode;
-  friendName: string
+  friendName: string,
+  userId: string,
+  friendshipId: string,
+  onFriendAccepted: any
+
 }
 
-const AcceptFriend: React.FC<AcceptFriendProps> = ({ friendName }) => {
+const AcceptFriend: React.FC<AcceptFriendProps> = ({ friendName, userId, friendshipId, onFriendAccepted }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAcceptingFriendship, setIsAcceptingFriendship] = useState(false);
+
+  const acceptFriend = async () => {
+    setIsAcceptingFriendship(true);
+    await defaultApi
+    .post("/friend/accept",{
+      id: friendshipId,
+      acceptingUserId: userId
+    })
+    .then((data) => {
+      setIsAcceptingFriendship(false);
+      onFriendAccepted(friendshipId);
+      setIsOpen(false);
+    }).catch(err => {
+      setIsAcceptingFriendship(false);
+      setIsOpen(false);
+      console.log("error: "+err);
+    });
+  }
 
   return (
     <div>
@@ -35,10 +57,13 @@ const AcceptFriend: React.FC<AcceptFriendProps> = ({ friendName }) => {
             <p>O usuário {friendName} te enviou uma solicitação de amizade! Tem certeza que deseja aprovar?</p>
             <button
               className="text-white text-lg bg-gray-800 hover:bg-blue-500 rounded-full mt-4 mx-auto"
-              onClick={() => setIsOpen(false)}
+              onClick={() => acceptFriend()}
             >
               <p className="mx-4">Aprovar</p>
             </button>
+            {isAcceptingFriendship && (
+              <p className='ml-4'>Aceitando Solicitação ...</p>
+            )}
           </div>
         </div>
       </div>

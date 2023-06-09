@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { useAuthentication } from '../components/useAuthentication'
-import Head from 'next/head'
-import Navbar from '../components/navbar'
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useAuthentication } from '../components/useAuthentication';
+import Head from 'next/head';
+import Navbar from '../components/navbar';
 import ListCards from '../components/listCards';
-import { FaPlus } from 'react-icons/fa'
 
 const feedbacks = [
   {
@@ -56,6 +55,7 @@ export default function FeedbackReceived() {
           </div>
           {feedbacks.map((feedback, index) => (
             <ListCards 
+              key={"received"+index}   
               index={"received"+index}
               title={"Orientador: "+feedback.leader}
               info1={"Último Feedback: "+feedback.lastFeedback}

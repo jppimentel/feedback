@@ -1,14 +1,42 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import {defaultApi} from "../services/defaultApi";
 
-const AddFriend = () => {
+interface AddFriendProps {
+  onFriendSent: any
+
+}
+
+const AddFriend: React.FC<AddFriendProps> = ({ onFriendSent }) => {
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isEmailSent, setIsEmailSent] = useState(false);
+  const [isSendingFriendship, setIsSendingFriendship] = useState(false);
   const [emailSent, setEmailSent] = useState("");
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
+
+  const addFriends = async () => {
+    setIsEmailSent(true);
+    setEmailSent(email);
+    await defaultApi
+    .post("/friend",{
+      fromUserId: localStorage.getItem('userId'),
+      toUserEmail: email
+    })
+    .then((data) => {
+      console.log("amizade enviada: "+ JSON.stringify(data.data.id))
+      onFriendSent(data.data.id);
+      setIsSendingFriendship(false);
+    }).catch(err => {
+      setIsValidEmail(false);
+      setIsEmailSent(false);
+      setIsSendingFriendship(false);
+      console.log("error: "+err);
+    });
+
+  }
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,12 +46,12 @@ const AddFriend = () => {
     setIsValidEmail(isValid);
 
     if (isValid) {
-      setIsEmailSent(true);
-      setEmailSent(email);
-      setEmail('');
+      setIsSendingFriendship(true); 
+      addFriends();
     } else{
       setIsEmailSent(false);
     }
+    setEmail('');
   };
 
   return (
@@ -46,10 +74,15 @@ const AddFriend = () => {
             Enviar
           </button>
         </div>
-        {!isValidEmail && <p className="text-red-500 mb-4">Email inválido.</p>}
-        {isEmailSent && (
+        {!isValidEmail && !isSendingFriendship && <p className="text-red-500 mb-4">Email inválido.</p>}
+        {isEmailSent && !isSendingFriendship && (
           <p className="text-green-500 mb-4">
             Solicitação enviada para {emailSent}! Deseja realizar nova solicitação de amizade?
+          </p>
+        )}
+        {isSendingFriendship && (
+          <p className="mb-4">
+          Enviando Solicitação ...
           </p>
         )}
       </form>

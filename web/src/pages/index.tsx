@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import Head from 'next/head'
-import Link from 'next/link'
-import {defaultApi} from "../services/defaultApi"
-import { useRouter } from 'next/router'
+import React, { useState } from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
+import {defaultApi} from "../services/defaultApi";
+import { useRouter } from 'next/router';
 
 
 export default function AppWeb() {
@@ -10,6 +10,7 @@ export default function AppWeb() {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -20,6 +21,7 @@ export default function AppWeb() {
   };
 
   const handleLogin = async () => {
+    setIsLoading(true);
     await defaultApi
       .post("/login", {
         email: email,
@@ -49,7 +51,7 @@ export default function AppWeb() {
       <main className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
         <div className="max-w-md w-full px-6 py-8 rounded-lg">
           <div className="flex flex-col items-center">
-          <h1 className='text-white text-5xl font-bold mb-32'>meufeedback.com</h1>
+            <h1 className='text-white text-5xl font-bold mb-32'>meufeedback.com</h1>
             <input
               type="email"
               className="border border-gray-300 px-3 py-2 rounded-md mb-4 w-60"
@@ -78,6 +80,9 @@ export default function AppWeb() {
                 Cadastro
               </button>
             </Link>
+            {isLoading && (
+              <p className='text-white mt-4'>Carregando...</p>
+            )}
           </div>
         </div>
       </main>
