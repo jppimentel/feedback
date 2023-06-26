@@ -3,18 +3,18 @@ import { FaPlus } from 'react-icons/fa';
 import AddFeedback from '../components/addFeedback';
 
 interface CardProps {
-  post: string;
+  currentRole: string;
   date: string;
-  comment: string;
-  onClick?: () => void; // Propriedade onClick como opcional
+  comments: string;
+  onClick?: () => void; 
 }
 
-const Card: React.FC<CardProps> = ({ post, date, comment, onClick }) => {
+const Card: React.FC<CardProps> = ({ currentRole, date, comments, onClick }) => {
   return (
     <div className="bg-blue-100 rounded-lg shadow-md p-4" onClick={onClick}>
-      <h2 className="text-xl font-bold">{post}</h2>
-      <p className="text-gray-500">{date}</p>
-      <p className="text-gray-500">{comment}</p>
+      <h2 className="text-xl font-bold">{currentRole}</h2>
+      <p className="text-gray-500">{formatDate(date)}</p>
+      <p className="text-gray-500">{comments}</p>
     </div>
   );
 };
@@ -43,7 +43,7 @@ const CardGrid: React.FC<{ cards: CardProps[], collaborator: string }> = ({ card
         <div className="flex justify-center items-center h-full">
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center"
-            onClick={() => openModal({ post: '', date: '', comment: '' })}
+            onClick={() => openModal({ currentRole: '', date: '', comments: '' })}
           >
             <FaPlus className="text-lg" />
           </button>
@@ -70,14 +70,14 @@ const CardGrid: React.FC<{ cards: CardProps[], collaborator: string }> = ({ card
               <br />
             </div>
             <br />
-            {selectedCard.post && selectedCard.date && selectedCard.comment && (
+            {selectedCard.currentRole && selectedCard.date && selectedCard.comments && (
               <div className="ml-4 mr-4 mt-8">
-                <p>Cargo: {selectedCard.post}</p>
-                <p>Data: {selectedCard.date}</p>
-                <p>Feedback: {selectedCard.comment}</p>
+                <p>Cargo: {selectedCard.currentRole}</p>
+                <p>Data: {formatDate(selectedCard.date)}</p>
+                <p>Feedback: {selectedCard.comments}</p>
               </div>
             )}
-            {!selectedCard.post && !selectedCard.date && !selectedCard.comment && (
+            {!selectedCard.currentRole && !selectedCard.date && !selectedCard.comments && (
               <div className="ml-4 mr-4 mt-8">
                 <AddFeedback startUser={collaborator}/>
               </div>
@@ -91,3 +91,15 @@ const CardGrid: React.FC<{ cards: CardProps[], collaborator: string }> = ({ card
 };
 
 export default CardGrid;
+
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const optionsDate: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  const optionsTime: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
+
+  const formattedDate = date.toLocaleDateString(undefined, optionsDate);
+  const formattedTime = date.toLocaleTimeString(undefined, optionsTime);
+
+  return `${formattedDate} ${formattedTime}`;
+}

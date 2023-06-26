@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuthentication } from '../components/useAuthentication';
 import Head from 'next/head';
@@ -7,28 +7,29 @@ import ListCards from '../components/listCards';
 import AddItem from '../components/addItem';
 import AddFeedback from '../components/addFeedback';
 import FeedbackCard from '../components/feedbacksCards';
+import {defaultApi} from "../services/defaultApi";
 
-const feedbacks = [
-  {
-    collaborator: 'João das Neves',
-    lastFeedback: '05/12/2022',
-    totalFeedbacks: '1',
-    approvalSent: true
+// const feedbacks = [
+//   {
+//     collaborator: 'João das Neves',
+//     lastFeedback: '05/12/2022',
+//     totalFeedbacks: '1',
+//     approvalSent: true
 
-  },
-  {
-    collaborator: 'Maria das Flores',
-    lastFeedback: '23/05/2023',
-    totalFeedbacks: '4',
-    approvalSent: false
-  },
-  {
-    collaborator: 'Apolinário do Rio',
-    lastFeedback: '01/02/2023',
-    totalFeedbacks: '2',
-    approvalSent: false
-  },
-];
+//   },
+//   {
+//     collaborator: 'Maria das Flores',
+//     lastFeedback: '23/05/2023',
+//     totalFeedbacks: '4',
+//     approvalSent: false
+//   },
+//   {
+//     collaborator: 'Apolinário do Rio',
+//     lastFeedback: '01/02/2023',
+//     totalFeedbacks: '2',
+//     approvalSent: false
+//   },
+// ];
 
 const cards = [
   {
@@ -57,12 +58,37 @@ const cards = [
 export default function FeedbackSent() {
   const router = useRouter();
   const { authenticated, isLoading } = useAuthentication();
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [loadedFeedbacks, setLoadedFeedbacks] = useState(false);
+  const [noFeedbacks, setNoFeedbacks] = useState(false);
+  const [lastFeedbackAccepted, setLastFeedbackAccepted] = useState("");
 
   useEffect(() => {
     if (!authenticated && !isLoading) {
       router.push('/');
     }
   }, [authenticated, isLoading, router]);
+
+  useEffect(() => {
+    const getFeedbacks = async () => {
+      await defaultApi
+      .get("/feedback/sent/"+localStorage.getItem('userId'),{})
+      .then((data) => {
+        setFeedbacks(data.data);
+        setLoadedFeedbacks(true);
+        if(data && data.data && data.data.length === 0){
+          setNoFeedbacks(true);
+        }
+        console.log("feedbacks sent: "+ JSON.stringify(feedbacks))
+      }).catch(err => {
+        console.log("error: "+err);
+      });
+
+    }
+    if (localStorage.getItem('isTokenValid') && localStorage.getItem('userId')) {
+      getFeedbacks();
+    }
+  }, [lastFeedbackAccepted]);
 
   if (isLoading) {
     return <div>Carregando...</div>;
@@ -87,7 +113,7 @@ export default function FeedbackSent() {
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Feedbacks Enviados</h1>
             <AddItem> <AddFeedback startUser={null}/> </AddItem>
           </div>
-          {feedbacks.map((feedback, index) => (
+          {/* {feedbacks.map((feedback, index) => (
             <ListCards 
               key={"sent"+index}    
               index={"sent"+index}
@@ -100,9 +126,47 @@ export default function FeedbackSent() {
             >
               <FeedbackCard feedbacks={cards} collaborator={feedback.collaborator}/>
             </ListCards>
+          ))} */}
+          {noFeedbacks === false && loadedFeedbacks === true && feedbacks.map((feedback, index) => (
+            <ListCards 
+              key={"sent"+index}    
+              index={"sent"+index}
+              title={feedback.toUserId}
+              info1={"Último Feedback: "+ returnMaxDate(feedback.feedbacksData)}
+              info2={"Total de Feedbacks: "+feedback.feedbacksData.length}
+              approvalSent={feedback.feedbacksData.some((feedback: any) => feedback.status === "WAITING")}
+              approvalWaiting={false}
+              feedbackCards={true}
+            >
+              <FeedbackCard feedbacks={feedback.feedbacksData} collaborator={feedback.toUserId}/>
+            </ListCards>
           ))}
+          {noFeedbacks === false && loadedFeedbacks === false && (
+            <p className='ml-4'>Carregando...</p>
+          )}
+
+          {noFeedbacks === true && loadedFeedbacks === true && (
+            <p className='ml-4'>Você ainda não enviou feedbacks.</p>
+          )}
         </div>
       </main>
     </>
   );
 }
+
+function returnMaxDate(feedbacksData: any[]): string {
+  const maxDate = feedbacksData.reduce((max: any, feedback: any) => {
+    const feedbackDate = new Date(feedback.date);
+    return feedbackDate > max ? feedbackDate : max;
+  }, new Date('1900-01-01')); 
+
+  const day = String(maxDate.getDate()).padStart(2, '0');
+  const month = String(maxDate.getMonth() + 1).padStart(2, '0');
+  const year = maxDate.getFullYear();
+  const hours = String(maxDate.getHours()).padStart(2, '0');
+  const minutes = String(maxDate.getMinutes()).padStart(2, '0');
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+

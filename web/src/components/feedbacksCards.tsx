@@ -3,9 +3,9 @@ import { BiSearchAlt2 } from 'react-icons/bi';
 import CardGrid from './cardGrid';
 
 interface Feedback {
-  post: string;
+  currentRole: string;
   date: string;
-  comment: string;
+  comments: string;
 }
 
 interface FeedbackCardProps {

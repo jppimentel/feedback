@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuthentication } from '../components/useAuthentication';
 import Head from 'next/head';
 import Navbar from '../components/navbar';
 import ListCards from '../components/listCards';
+import {defaultApi} from "../services/defaultApi";
 
 const feedbacks = [
   {
@@ -24,12 +25,37 @@ const feedbacks = [
 export default function FeedbackReceived() {
   const router = useRouter();
   const { authenticated, isLoading } = useAuthentication();
+  // const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [loadedFeedbacks, setLoadedFeedbacks] = useState(false);
+  const [noFeedbacks, setNoFeedbacks] = useState(false);
+  const [lastFeedbackAccepted, setLastFeedbackAccepted] = useState("");
 
   useEffect(() => {
     if (!authenticated && !isLoading) {
       router.push('/');
     }
   }, [authenticated, isLoading, router]);
+
+  // useEffect(() => {
+  //   const getFeedbacks = async () => {
+  //     await defaultApi
+  //     .get("/feedback/received/"+localStorage.getItem('userId'),{})
+  //     .then((data) => {
+  //       setFeedbacks(data.data);
+  //       setLoadedFeedbacks(true);
+  //       if(data && data.data && data.data.length === 0){
+  //         setNoFeedbacks(true);
+  //       }
+  //       console.log("feedbacks received now: "+ JSON.stringify(feedbacks))
+  //     }).catch(err => {
+  //       console.log("error: "+err);
+  //     });
+
+  //   }
+  //   if (localStorage.getItem('isTokenValid') && localStorage.getItem('userId')) {
+  //     getFeedbacks();
+  //   }
+  // }, [lastFeedbackAccepted]);
 
   if (isLoading) {
     return <div>Carregando...</div>;
@@ -66,6 +92,26 @@ export default function FeedbackReceived() {
             >
             </ListCards>
           ))}
+          {noFeedbacks === false && loadedFeedbacks === true && feedbacks.map((feedback, index) => (
+            <ListCards 
+              key={"received"+index}   
+              index={"received"+index}
+              title={"Orientador: "+feedback.leader}
+              info1={"Último Feedback: "+feedback.lastFeedback}
+              info2={"Total de Feedbacks: "+feedback.totalFeedbacks}
+              approvalSent={false}
+              approvalWaiting={feedback.approvalWaiting}
+              feedbackCards={false}
+            >
+            </ListCards>
+          ))}
+          {noFeedbacks === false && loadedFeedbacks === false && (
+            <p className='ml-4'>Carregando...</p>
+          )}
+
+          {noFeedbacks === true && loadedFeedbacks === true && (
+            <p className='ml-4'>Você ainda não recebeu feedbacks.</p>
+          )}
         </div>
       </main>
     </>
