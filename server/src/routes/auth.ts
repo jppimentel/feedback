@@ -66,6 +66,10 @@ export async function authRoutes(fastify: FastifyInstance){
     }
     
   });
+
+  fastify.get('/healthCheck', async (request, reply) => {
+    return reply.status(201).send("live");
+  })
   
 };
 

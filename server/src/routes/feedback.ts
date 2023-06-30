@@ -26,7 +26,20 @@ export async function feedbackRoutes(fastify: FastifyInstance){
       }
     });
 
-    return reply.status(201).send(feedbacks);
+    let feedbacksWithUserName = [];
+    if (feedbacks) {
+      for (const feedback of feedbacks) {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: feedback.toUserId
+          }
+        });
+    
+        feedbacksWithUserName.push(Object.assign({}, feedback, { toUserName: user?.name }));
+      }
+    }
+
+    return reply.status(201).send(feedbacksWithUserName);
   });
 
   // ************************************ get received feedbacks
@@ -49,7 +62,21 @@ export async function feedbackRoutes(fastify: FastifyInstance){
       }
     });
 
-    return reply.status(201).send(feedbacks);
+    let feedbacksWithUserName = [];
+    if (feedbacks) {
+      for (const feedback of feedbacks) {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: feedback.fromUserId
+          }
+        });
+    
+        feedbacksWithUserName.push(Object.assign({}, feedback, { fromUserName: user?.name }));
+      }
+    }
+
+    return reply.status(201).send(feedbacksWithUserName);
+
   });
 
   // ************************************ create feedback
