@@ -9,51 +9,6 @@ import AddFeedback from '../components/addFeedback';
 import FeedbackCard from '../components/feedbacksCards';
 import {defaultApi} from "../services/defaultApi";
 
-// const feedbacks = [
-//   {
-//     collaborator: 'João das Neves',
-//     lastFeedback: '05/12/2022',
-//     totalFeedbacks: '1',
-//     approvalSent: true
-
-//   },
-//   {
-//     collaborator: 'Maria das Flores',
-//     lastFeedback: '23/05/2023',
-//     totalFeedbacks: '4',
-//     approvalSent: false
-//   },
-//   {
-//     collaborator: 'Apolinário do Rio',
-//     lastFeedback: '01/02/2023',
-//     totalFeedbacks: '2',
-//     approvalSent: false
-//   },
-// ];
-
-const cards = [
-  {
-    post: 'Card 1',
-    date: '01/01/2023',
-    comment: 'Ótimo funcionário',
-  },
-  {
-    post: 'Card 2',
-    date: '01/01/2023',
-    comment: 'Ótimo funcionário',
-  },
-  {
-    post: 'Card 3',
-    date: '01/01/2023',
-    comment: 'Ótimo funcionário',
-  },
-  {
-    post: 'Card 4',
-    date: '01/01/2023',
-    comment: 'Ótimo funcionário',
-  }
-];
-
 
 export default function FeedbackSent() {
   const router = useRouter();
@@ -111,34 +66,22 @@ export default function FeedbackSent() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Feedbacks Enviados</h1>
-            <AddItem> <AddFeedback startUser={null}/> </AddItem>
+            <AddItem> <AddFeedback startUser={null} startUserId={null}/> </AddItem>
           </div>
-          {/* {feedbacks.map((feedback, index) => (
-            <ListCards 
-              key={"sent"+index}    
-              index={"sent"+index}
-              title={feedback.collaborator}
-              info1={"Último Feedback: "+feedback.lastFeedback}
-              info2={"Total de Feedbacks: "+feedback.totalFeedbacks}
-              approvalSent={feedback.approvalSent}
-              approvalWaiting={false}
-              feedbackCards={true}
-            >
-              <FeedbackCard feedbacks={cards} collaborator={feedback.collaborator}/>
-            </ListCards>
-          ))} */}
+
           {noFeedbacks === false && loadedFeedbacks === true && feedbacks.map((feedback, index) => (
             <ListCards 
-              key={"sent"+index}    
+              key={"feedbackSent"+index}    
+              listType={"feedbacks"}
               index={"sent"+index}
-              title={feedback.toUserId}
+              title={feedback.toUserName}
               info1={"Último Feedback: "+ returnMaxDate(feedback.feedbacksData)}
               info2={"Total de Feedbacks: "+feedback.feedbacksData.length}
               approvalSent={feedback.feedbacksData.some((feedback: any) => feedback.status === "WAITING")}
               approvalWaiting={false}
               feedbackCards={true}
             >
-              <FeedbackCard feedbacks={feedback.feedbacksData} collaborator={feedback.toUserId}/>
+              <FeedbackCard feedbacks={feedback.feedbacksData} collaborator={feedback.toUserName} collaboratorId={feedback.toUserId} type="sent"/>
             </ListCards>
           ))}
           {noFeedbacks === false && loadedFeedbacks === false && (

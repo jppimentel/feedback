@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {defaultApi} from "../services/defaultApi";
 
 interface AddFeedbackProps {
-  startUser: string | null
+  startUser: string | null;
+  startUserId: string | null
 }
 
 // const AddFeedback: React.FC = () => {
-const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null }) => {
+const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId = null }) => {
   const [selectedUserId, setSelectedUserId] = useState('');
   const [selectedUserName, setSelectedUserName] = useState('');
   const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
@@ -135,7 +136,7 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null }) => {
                 className="border border-gray-300 rounded px-2 py-1"
               >
                 {startUser && (
-                  <option value="">{startUser}</option>
+                  <option value={startUserId || ""}>{startUser}</option>
                 )}
 
                 {!startUser && (

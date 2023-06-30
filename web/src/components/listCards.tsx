@@ -2,6 +2,7 @@ import React, { useState, ReactNode } from 'react';
 
 interface ListCardsProps {
   index: string;
+  listType: string;
   title: string,
   info1: string,
   info2: string,
@@ -11,7 +12,7 @@ interface ListCardsProps {
   feedbackCards: boolean | null
 }
 
-const ListCards: React.FC<ListCardsProps> = ({ index, title, info1, info2, approvalSent = null, approvalWaiting = null, children = null, feedbackCards = null }) => {
+const ListCards: React.FC<ListCardsProps> = ({ index, listType, title, info1, info2, approvalSent = null, approvalWaiting = null, children = null, feedbackCards = null }) => {
 
 
   return (
@@ -19,22 +20,45 @@ const ListCards: React.FC<ListCardsProps> = ({ index, title, info1, info2, appro
       <div className="flex-grow">
         <div className="flex justify-between">
           <h2 className="text-xl text-gray-800 font-bold">{title}</h2>
-          {approvalSent === true && (
-            <div className="text-gray-800">Aguardando Aprovação</div>
-          )}
-          {(approvalWaiting === true) && (
+          {listType === "friends" && (
             <>
-              {children}
+              {approvalSent === true && (
+                <div className="text-gray-800">Aguardando Aprovação</div>
+              )}
+              {(approvalWaiting === true) && (
+                <>
+                  {children}
+                </>
+              )}
+            </>
+          )}
+          {listType === "feedbacks" && (
+            <>
+              {(feedbackCards === true) && (
+                <>
+                  {children}
+                </>
+              )}
             </>
           )}
         </div>
         <p className="text-gray-800">{info1}</p>
         <p className="text-gray-800">{info2}</p>
-        {(feedbackCards === true) && (
+        {listType === "feedbacks" && (
+          <>
+            {(approvalWaiting === true) && (
+                <p className="text-blue-600">Feedback Não Aprovado</p>
+              )}
+            {(approvalSent === true) && (
+                <p className="text-blue-600">Aguardando Aprovação</p>
+            )}  
+          </>
+        )}
+        {/* {(feedbackCards === true) && (
             <>
               {children}
             </>
-          )}
+          )} */}
       </div>
     </div>
   );

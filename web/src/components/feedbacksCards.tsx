@@ -6,15 +6,18 @@ interface Feedback {
   currentRole: string;
   date: string;
   comments: string;
+  status: string;
 }
 
 interface FeedbackCardProps {
   feedbacks: Feedback[];
-  collaborator: string
+  collaborator: string;
+  collaboratorId: string;
+  type: string;
 }
 
 
-const FeedbackCard: React.FC<FeedbackCardProps> = ({ feedbacks, collaborator }) => {
+const FeedbackCard: React.FC<FeedbackCardProps> = ({ feedbacks, collaborator, collaboratorId, type }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -43,9 +46,14 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({ feedbacks, collaborator }) 
               <br />
             </div>
             <br />
-            <p className="ml-4 mr-4">Feedbacks enviados para {collaborator}</p>
+            {type === "sent" && (
+              <p className="ml-4 mr-4">Feedbacks enviados para {collaborator}</p>
+            )}
+            {type === "received" && (
+              <p className="ml-4 mr-4">Feedbacks recebidos de {collaborator}</p>
+            )}
             <div className="ml-4 mr-4 mt-8">
-              <CardGrid cards={feedbacks} collaborator={collaborator}/>
+              <CardGrid cards={feedbacks} collaborator={collaborator} collaboratorId={collaboratorId} type={type}/>
             </div>
           </div>
         </div>

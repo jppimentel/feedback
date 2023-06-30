@@ -76,6 +76,7 @@ export default function Myfriends() {
           {noFriends === false && loadedFriends === true && friends.map((friend, index) => (
             <ListCards 
               key={"friend"+index}  
+              listType={"friends"}
               index={"friend"+index}
               title={friend.friendUser.name}
               info1={calculateAge(friend.friendUser.birthDate) + " anos"}
