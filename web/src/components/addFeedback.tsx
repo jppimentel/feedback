@@ -8,8 +8,8 @@ interface AddFeedbackProps {
 }
 
 const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId = null, onFeedbackSent }) => {
-  const [selectedUserId, setSelectedUserId] = startUserId ? useState(startUserId) : useState('');
-  const [selectedUserName, setSelectedUserName] = startUser ? useState(startUser) : useState('');
+  const [selectedUserId, setSelectedUserId] = useState(startUserId || '');
+  const [selectedUserName, setSelectedUserName] = useState(startUser || '');
   const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
   const [position, setPosition] = useState('');
   const [comment, setComment] = useState('');
@@ -133,7 +133,7 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId
                   <>
                     <option value="">Selecione o Usuário</option>
                     {friends.map((friend, index) => (
-                      <option value={friend.friendUserId}>{friend.friendUser.name}</option>
+                      <option key={index} value={friend.friendUserId}>{friend.friendUser.name}</option>
                     ))}
                   </>
                 )}
