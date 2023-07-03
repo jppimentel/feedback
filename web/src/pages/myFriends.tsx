@@ -39,7 +39,6 @@ export default function Myfriends() {
         if(data && data.data && data.data.length === 0){
           setNoFriends(true);
         }
-        console.log("friends received now: "+ JSON.stringify(friends))
       }).catch(err => {
         console.log("error: "+err);
       });

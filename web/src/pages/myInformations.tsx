@@ -37,7 +37,7 @@ export default function MyInformations() {
       </Head>
       <main>
         <Navbar activeButton='myInformation' />
-        <p>Inserir Tela de Cadastro de Informações</p>
+        <p className='ml-4'>Tela de Informações - Não contemplada no protótipo.</p>
         
       </main>
     </>

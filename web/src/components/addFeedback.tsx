@@ -3,13 +3,13 @@ import {defaultApi} from "../services/defaultApi";
 
 interface AddFeedbackProps {
   startUser: string | null;
-  startUserId: string | null
+  startUserId: string | null;
+  onFeedbackSent: any
 }
 
-// const AddFeedback: React.FC = () => {
-const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId = null }) => {
-  const [selectedUserId, setSelectedUserId] = useState('');
-  const [selectedUserName, setSelectedUserName] = useState('');
+const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId = null, onFeedbackSent }) => {
+  const [selectedUserId, setSelectedUserId] = startUserId ? useState(startUserId) : useState('');
+  const [selectedUserName, setSelectedUserName] = startUser ? useState(startUser) : useState('');
   const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
   const [position, setPosition] = useState('');
   const [comment, setComment] = useState('');
@@ -20,7 +20,7 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId
 
   const [noFriends, setNoFriends] = useState(false);
   const [loadedFriends, setLoadedFriends] = useState(false);
-  const [lastFriendAccepted, setLastFriendAccepted] = useState("");
+  const [lastFeedbackAccepted, setLastFeedbackAccepted] = useState("");
   const [friends, setFriends] = useState<any[]>([]);
   
 
@@ -34,7 +34,6 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId
         if(data && data.data && data.data.length === 0){
           setNoFriends(true);
         }
-        console.log("friends received now: "+ JSON.stringify(friends))
       }).catch(err => {
         console.log("error: "+err);
       });
@@ -43,7 +42,7 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId
     if (localStorage.getItem('isTokenValid') && localStorage.getItem('userId')) {
       getFriends();
     }
-  }, [lastFriendAccepted]);
+  }, [lastFeedbackAccepted]);
   
   const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
@@ -69,16 +68,7 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId
       setIsAPIError(false);
       return;
     }
-
-    // Lógica de envio do formulário
     callAddFeedbackAPI();
-    // setUserSubmitted(selectedUser);
-    // setSelectedUser('');
-    // setCurrentDate(new Date().toLocaleDateString());
-    // setPosition('');
-    // setComment('');
-    // setIsError(false);
-    // setIsFormSubmitted(true);
   };
 
   const callAddFeedbackAPI = async () => {
@@ -92,7 +82,7 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId
       comments: comment
     })
     .then((data) => {
-      console.log("feedback enviada: "+ JSON.stringify(data.data.id))
+      onFeedbackSent(data.data.id + new Date());
       setUserSubmitted(selectedUserName);
       setSelectedUserId('');
       setSelectedUserName('');
@@ -145,10 +135,6 @@ const AddFeedback: React.FC<AddFeedbackProps> = ({ startUser = null, startUserId
                     {friends.map((friend, index) => (
                       <option value={friend.friendUserId}>{friend.friendUser.name}</option>
                     ))}
-                    {/* <option value="">Selecione o Usuário</option>
-                    <option value="user1">Usuário 1</option>
-                    <option value="user2">Usuário 2</option>
-                    <option value="user3">Usuário 3</option> */}
                   </>
                 )}
               </select>

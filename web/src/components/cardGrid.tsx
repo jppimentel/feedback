@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import AddFeedback from '../components/addFeedback';
+import AcceptFeedback from './acceptFeedback';
 
 interface CardProps {
   currentRole: string;
   date: string;
   comments: string;
   status: string;
+  id: string;
   onClick?: () => void; 
 }
 
-const Card: React.FC<CardProps> = ({ currentRole, date, comments, status, onClick }) => {
+const Card: React.FC<CardProps> = ({ currentRole, date, comments, status, id, onClick }) => {
   return (
     <div className="bg-blue-100 rounded-lg shadow-md p-4" onClick={onClick}>
       <h2 className="text-xl font-bold">{currentRole}</h2>
       <p className="">{formatDate(date)}</p>
-      <p className="">{comments}</p>
       {status === "WAITING" && (
         <p className="text-blue-600">Aguardando Aprovação</p>
       )}
@@ -24,7 +25,7 @@ const Card: React.FC<CardProps> = ({ currentRole, date, comments, status, onClic
 };
 
 
-const CardGrid: React.FC<{ cards: CardProps[], collaborator: string, collaboratorId: string, type: string }> = ({ cards, collaborator, collaboratorId, type }) => {
+const CardGrid: React.FC<{ cards: CardProps[], collaborator: string, collaboratorId: string, type: string, onFeedbackSent:any }> = ({ cards, collaborator, collaboratorId, type, onFeedbackSent }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardProps | null>(null);
 
@@ -48,7 +49,7 @@ const CardGrid: React.FC<{ cards: CardProps[], collaborator: string, collaborato
           <div className="flex justify-center items-center h-full">
             <button
               className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 mr-4 flex items-center justify-center"
-              onClick={() => openModal({ currentRole: '', date: '', comments: '', status: '' })}
+              onClick={() => openModal({ currentRole: '', date: '', comments: '', status: '', id: '' })}
             >
               <FaPlus className="text-lg" />
             </button>
@@ -82,11 +83,7 @@ const CardGrid: React.FC<{ cards: CardProps[], collaborator: string, collaborato
                 <p>Data: {formatDate(selectedCard.date)}</p>
                 <p>Feedback: {selectedCard.comments}</p>
                 {selectedCard.status === "WAITING" && type === "received" && (
-                  <button
-                    className="text-white text-lg bg-gray-800 hover:bg-blue-500 rounded-full mt-4 mx-auto"
-                  >
-                    <p className="mx-4">Aprovar</p>
-                  </button>
+                  <AcceptFeedback id={selectedCard.id} onFeedbackAccept={onFeedbackSent}/>
                 )}
                 {selectedCard.status === "WAITING" && type === "sent" && (
                   <p className="text-blue-600">Aguardando Aprovação</p>
@@ -95,7 +92,7 @@ const CardGrid: React.FC<{ cards: CardProps[], collaborator: string, collaborato
             )}
             {!selectedCard.currentRole && !selectedCard.date && !selectedCard.comments && (
               <div className="ml-4 mr-4 mt-8">
-                <AddFeedback startUser={collaborator} startUserId={collaboratorId}/>
+                <AddFeedback startUser={collaborator} startUserId={collaboratorId} onFeedbackSent={onFeedbackSent}/>
               </div>
             )}
             

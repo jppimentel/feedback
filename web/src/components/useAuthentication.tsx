@@ -58,7 +58,7 @@ export function useAuthentication() {
 
   useEffect(() => {
     if (tokenIssuedAt) {
-      const oneDayInMillis = 24 * 60 * 60 * 1000; // one day
+      const oneDayInMillis = 24 * 60 * 60 * 1000;
       const currentTime = new Date().getTime();
       const tokenExpirationTime = tokenIssuedAt.getTime() + oneDayInMillis;
 

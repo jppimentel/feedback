@@ -26,7 +26,6 @@ const AddFriend: React.FC<AddFriendProps> = ({ onFriendSent }) => {
       toUserEmail: email
     })
     .then((data) => {
-      console.log("amizade enviada: "+ JSON.stringify(data.data.id))
       onFriendSent(data.data.id);
       setIsSendingFriendship(false);
     }).catch(err => {

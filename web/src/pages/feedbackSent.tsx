@@ -18,6 +18,10 @@ export default function FeedbackSent() {
   const [noFeedbacks, setNoFeedbacks] = useState(false);
   const [lastFeedbackAccepted, setLastFeedbackAccepted] = useState("");
 
+  const handleFeedbackAccepted = (feedbackId: string) => {
+    setLastFeedbackAccepted(feedbackId);
+  };
+
   useEffect(() => {
     if (!authenticated && !isLoading) {
       router.push('/');
@@ -34,7 +38,6 @@ export default function FeedbackSent() {
         if(data && data.data && data.data.length === 0){
           setNoFeedbacks(true);
         }
-        console.log("feedbacks sent: "+ JSON.stringify(feedbacks))
       }).catch(err => {
         console.log("error: "+err);
       });
@@ -66,7 +69,7 @@ export default function FeedbackSent() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Feedbacks Enviados</h1>
-            <AddItem> <AddFeedback startUser={null} startUserId={null}/> </AddItem>
+            <AddItem> <AddFeedback startUser={null} startUserId={null} onFeedbackSent={handleFeedbackAccepted}/> </AddItem>
           </div>
 
           {noFeedbacks === false && loadedFeedbacks === true && feedbacks.map((feedback, index) => (
@@ -81,7 +84,7 @@ export default function FeedbackSent() {
               approvalWaiting={false}
               feedbackCards={true}
             >
-              <FeedbackCard feedbacks={feedback.feedbacksData} collaborator={feedback.toUserName} collaboratorId={feedback.toUserId} type="sent"/>
+              <FeedbackCard feedbacks={feedback.feedbacksData} collaborator={feedback.toUserName} collaboratorId={feedback.toUserId} type="sent" onFeedbackSent={handleFeedbackAccepted}/>
             </ListCards>
           ))}
           {noFeedbacks === false && loadedFeedbacks === false && (

@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import {defaultApi} from "../services/defaultApi";
+import { defaultApi } from "../services/defaultApi";
 import { useRouter } from 'next/router';
-
 
 export default function AppWeb() {
   const router = useRouter();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(true);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -22,23 +22,41 @@ export default function AppWeb() {
 
   const handleLogin = async () => {
     setIsLoading(true);
-    await defaultApi
-      .post("/login", {
+    try {
+      const data = await defaultApi.post("/login", {
         email: email,
         password: password,
-      })
-      .then((data) => {
-        localStorage.setItem('token', data.data);
-        router.push('/home');
-        
-      }).catch(err => {
-        console.log("error: "+err)
       });
+      localStorage.setItem('token', data.data);
+      router.push('/home');
+    } catch (error) {
+      console.log("error: " + error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignUp = () => {
     router.push('/register');
   };
+
+  const checkServerStatus = async () => {
+    try {
+      const response = await defaultApi.get("/healthCheck");
+      if (response.data === "live") {
+        setIsConnecting(false);
+      } else {
+        setTimeout(checkServerStatus, 10000);
+      }
+    } catch (error) {
+      setTimeout(checkServerStatus, 10000);
+    }
+  };
+
+  useEffect(() => {
+    checkServerStatus();
+  }, []);
+
 
   return (
     <>
@@ -66,22 +84,28 @@ export default function AppWeb() {
               value={password}
               onChange={handlePasswordChange}
             />
-            <button
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-md w-60 mb-4"
-              onClick={handleLogin}
-            >
-              Login
-            </button>
-            <Link href={'/register'}>
-              <button
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-md w-60"
-                onClick={handleSignUp}
-              >
-                Cadastro
-              </button>
-            </Link>
-            {isLoading && (
-              <p className='text-white mt-4'>Carregando...</p>
+            {isConnecting ? (
+              <p className='text-white mt-4'>Conectando ao Servidor...</p>
+            ) : (
+              <>
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-md w-60 mb-4"
+                  onClick={handleLogin}
+                >
+                  Login
+                </button>
+                <Link href={'/register'}>
+                  <button
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-md w-60"
+                    onClick={handleSignUp}
+                  >
+                    Cadastro
+                  </button>
+                </Link>
+                {isLoading && (
+                  <p className='text-white mt-4'>Carregando...</p>
+                )}
+              </>
             )}
           </div>
         </div>

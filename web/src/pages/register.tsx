@@ -31,7 +31,7 @@ export default function Register() {
     if (password !== confirmPassword) {
       setPasswordMismatch(true);
     } else {
-      // Lógica para processar o registro
+ 
     }
   };
   

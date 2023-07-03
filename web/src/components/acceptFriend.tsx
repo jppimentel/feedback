@@ -22,7 +22,7 @@ const AcceptFriend: React.FC<AcceptFriendProps> = ({ friendName, userId, friends
     })
     .then((data) => {
       setIsAcceptingFriendship(false);
-      onFriendAccepted(friendshipId);
+      onFriendAccepted(friendshipId + new Date());
       setIsOpen(false);
     }).catch(err => {
       setIsAcceptingFriendship(false);

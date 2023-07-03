@@ -7,22 +7,6 @@ import ListCards from '../components/listCards';
 import FeedbackCard from '../components/feedbacksCards';
 import {defaultApi} from "../services/defaultApi";
 
-const mockFeedbacks = [
-  {
-    leader: 'João das Neves',
-    lastFeedback: '05/12/2022',
-    totalFeedbacks: '1',
-    approvalWaiting: false
-  },
-  {
-    leader: 'Maria das Flores',
-    lastFeedback: '23/05/2023',
-    totalFeedbacks: '4',
-    approvalWaiting: false
-  }
-];
-
-
 export default function FeedbackReceived() {
   const router = useRouter();
   const { authenticated, isLoading } = useAuthentication();
@@ -30,6 +14,10 @@ export default function FeedbackReceived() {
   const [loadedFeedbacks, setLoadedFeedbacks] = useState(false);
   const [noFeedbacks, setNoFeedbacks] = useState(false);
   const [lastFeedbackAccepted, setLastFeedbackAccepted] = useState("");
+
+  const handleFeedbackAccepted = (feedbackId: string) => {
+    setLastFeedbackAccepted(feedbackId);
+  };
 
   useEffect(() => {
     if (!authenticated && !isLoading) {
@@ -80,19 +68,6 @@ export default function FeedbackReceived() {
           <div className="flex items-center justify-between mb-4 mt-4">
             <h1 className="text-2xl text-gray-800 font-bold ml-4">Feedbacks Recebidos</h1>
           </div>
-          {/* {mockFeedbacks.map((feedback, index) => (
-            <ListCards 
-              key={"received"+index}   
-              index={"received"+index}
-              title={"Orientador: "+feedback.leader}
-              info1={"Último Feedback: "+feedback.lastFeedback}
-              info2={"Total de Feedbacks: "+feedback.totalFeedbacks}
-              approvalSent={false}
-              approvalWaiting={feedback.approvalWaiting}
-              feedbackCards={false}
-            >
-            </ListCards>
-          ))} */}
           {noFeedbacks === false && loadedFeedbacks === true && feedbacks.map((feedback, index) => (
             <ListCards 
               key={"feedbackReceived" + index}   
@@ -105,7 +80,7 @@ export default function FeedbackReceived() {
               approvalWaiting={feedback.feedbacksData.some((feedback: any) => feedback.status === "WAITING")}
               feedbackCards={true}
             >
-                <FeedbackCard feedbacks={feedback.feedbacksData} collaborator={feedback.fromUserName} collaboratorId={feedback.fromUserId} type="received"/>
+                <FeedbackCard feedbacks={feedback.feedbacksData} collaborator={feedback.fromUserName} collaboratorId={feedback.fromUserId} type="received" onFeedbackSent={handleFeedbackAccepted}/>
             </ListCards>
           ))}
           {noFeedbacks === false && loadedFeedbacks === false && (
