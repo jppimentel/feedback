@@ -1,14 +1,28 @@
-import React, { useState } from 'react'
-import { HiEye, HiEyeOff } from 'react-icons/hi'
-import Head from 'next/head'
+import React, { useState } from 'react';
+import { HiEye, HiEyeOff } from 'react-icons/hi';
+import Head from 'next/head';
+import {defaultApi} from "../services/defaultApi";
+import { useRouter } from 'next/router';
 
 export default function Register() {
+  const router = useRouter();
+
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [actualCompany, setActualCompany] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [birthDateFormat, setBirthDateFormat] = useState<Date | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const [apiStatus, setApiStatus] = useState("start");
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+  
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
@@ -23,17 +37,57 @@ export default function Register() {
     setPasswordMismatch(false);
   };
 
+  const handleActualCompanyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setActualCompany(e.target.value);
+  };
+
+  const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBirthDate(e.target.value);
+    let date = new Date(e.target.value);
+    setBirthDateFormat(date);
+  };
+
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleRegister = () => {
+    setApiStatus("evaluating");
+    if(name && email && password && actualCompany && birthDateFormat){
+      setAllFieldsFilled(true);
+    } else {
+      setAllFieldsFilled(false);
+    }
     if (password !== confirmPassword) {
       setPasswordMismatch(true);
     } else {
- 
+      if (name && email && password && actualCompany && birthDateFormat){
+        registerUser();   
+      } 
     }
   };
+
+  const registerUser = async () => {
+    setApiStatus("calling");
+    await defaultApi
+    .post("/user",{
+      name: name,
+      email: email,
+      password: password,
+      actualCompany: actualCompany,
+      birthDate: birthDateFormat
+    })
+    .then((data) => {
+      setApiStatus("done");
+      setTimeout(() => {
+        router.push('/');
+      }, 5000); 
+    }).catch(err => {
+      setApiStatus("error")
+      console.log("error: "+err);
+      return;
+    });
+  }
   
   return (
     <>
@@ -48,6 +102,13 @@ export default function Register() {
           <div className="flex flex-col items-center">
             <div className="flex flex-col items-center">
             <h1 className='text-white text-5xl font-bold mb-32'>meufeedback.com</h1>
+              <input
+                type="text"
+                className="border border-gray-300 px-3 py-2 rounded-md mb-4 w-60"
+                placeholder="Nome"
+                value={name}
+                onChange={handleNameChange}
+              />
               <input
                 type="email"
                 className="border border-gray-300 px-3 py-2 rounded-md mb-4 w-60"
@@ -77,15 +138,43 @@ export default function Register() {
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
               />
+              <input
+                type="text"
+                className="border border-gray-300 px-3 py-2 rounded-md mb-4 w-60"
+                placeholder="Empresa"
+                value={actualCompany}
+                onChange={handleActualCompanyChange}
+              />
+              <input
+                type="date"
+                className="border border-gray-300 px-3 py-2 rounded-md mb-4 w-60"
+                placeholder="Data de Nascimento"
+                value={birthDate}
+                onChange={handleBirthDateChange}
+              />
               {passwordMismatch && (
                 <p className="text-red-500 text-sm mb-4">As senhas não coincidem.</p>
               )}
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-md w-60"
-                onClick={handleRegister}
-              >
-                Cadastrar
-              </button>
+              {apiStatus === "error" && (
+                <p className="text-red-500 text-sm mb-4">Não foi possível cadastrá-lo no sistema.</p>
+              )}
+              {apiStatus === "evaluating" && !allFieldsFilled && (
+                <p className="text-red-500 text-sm mb-4">Preencha todos os campos.</p>
+              )}
+              {apiStatus === "calling" && (
+                <p className="text-white text-sm mb-4">Cadastrando...</p>
+              )}
+              {apiStatus === "done" && (
+                <p className="text-white text-sm mb-4">Usuário cadastrado com sucesso! Você será redirecionado para a página de Login.</p>
+              )}
+              {apiStatus !== "done" && apiStatus !== "calling" && (
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-md w-60"
+                  onClick={handleRegister}
+                >
+                  Cadastrar
+                </button>
+              )}
             </div>
           </div>
         </div>

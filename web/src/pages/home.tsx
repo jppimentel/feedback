@@ -54,6 +54,21 @@ export default function Home() {
             {linkButton('Feedbacks Enviados', '/feedbackSent')}
             {linkButton('Feedbacks Recebidos', '/feedbackReceived')}
             {linkButton('Meus Amigos', '/myFriends')}
+            <div className='pt-10'>
+              <button 
+                className="bg-red-800 px-6 py-4 rounded-full text-white font-bold text-sm uppercase hover:bg-red-900"
+                style={{ width: '250px'}}
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('isTokenValid');
+                  localStorage.removeItem('tokenIssuedAt');
+                  localStorage.removeItem('userId');
+                  router.push('/');
+                }}
+              >
+                Sair
+              </button>
+            </div>
           </div>
         </div>
         
